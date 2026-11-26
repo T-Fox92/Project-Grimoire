@@ -1,5 +1,9 @@
+from UserInterface.MainMenu import MainMenu
+
+
 def main():
-    print ("Welcome to Project Grimoire!")
+    menu = MainMenu ()
+    menu.display ()
 
 if __name__ == "__main__":
     main()
