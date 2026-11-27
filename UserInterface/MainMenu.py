@@ -1,11 +1,17 @@
 from UserInterface.AdventureCreationForm import AdventureCreationForm
+from UserInterface.CharacterCreationMenu import CharacterCreationMenu
 from SubmissionValidation.AdventureValidator import AdventureValidator
 
 
 class MainMenu:
 
+    def __init__ (self):
+        self.current_character = None
+
     def display (self):
-        while True:
+        running = True
+
+        while running:
             print("\n================================")
             print("       PROJECT GRIMOIRE")
             print("================================")
@@ -18,7 +24,7 @@ class MainMenu:
             choice = input ("Select an option: ")
 
             if choice == "1":
-                print ("\nCharacter creation is not yet implemented.")
+                self.create_character()
 
             elif choice == "2":
                 print ("\nLoading characters is not yet implemented.")
@@ -28,16 +34,22 @@ class MainMenu:
 
             elif choice == "4":
                 print ("Thank you for playing Project Grimoire!")
-                break
+                running = False
 
             else:
                 print ("\nInvalid selection. Please choose 1, 2, 3 or 4.")
+
+    def create_character (self):
+        menu = CharacterCreationMenu()
+        self.current_character = menu.create_character()
 
     def create_adventure (self):
         form = AdventureCreationForm()
         validator = AdventureValidator()
 
-        while True:
+        adventure_created = False
+
+        while not adventure_created:
             adventure_data = form.display ()
 
             errors = validator.validate_adventure (adventure_data)

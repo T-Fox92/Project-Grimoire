@@ -1,15 +1,55 @@
 class Character:
-    def __init__ (self, name, job, attributes = None):
+    def __init__ (self, name, job, attributes = None, race = None):
         self.name = name
         self.level = 1
+        self.experience = 0
+        self.maxHealth = 100
+        self.currentHealth = 100
         self.job = job
-        self.attributes = attributes if attributes is not None else {}
+        self.race = race
+        self.attributes = attributes if attributes is not None else {
+            "Strength": 3,
+            "Agility": 3,
+            "Constitution": 3,
+            "Intelligence": 3,
+            "Willpower": 3
+        }
         self.learnedAbilities = []
         self.specializationAffinities = []
 
         # Automatically learn the Job's starting abilities
         for ability in self.job.get_starting_abilities ():
             self.learnedAbilities.append (ability)
+
+    def increase_attributes (self, selected_attributes = None):
+        for attribute in self.attributes:
+            self.attributes [attribute] += 1
+
+        if selected_attributes is not None:
+            for attribute in selected_attributes:
+                if attribute in self.attributes:
+                    self.attributes [attribute] += 2
+
+    def take_damage (self, amount):
+
+        if amount <= 0:
+            return False
+
+        self.currentHealth = max (0, self.currentHealth - amount)
+
+        return True
+
+    def restore_health (self, amount):
+
+        if amount <= 0:
+            return False
+
+        self.currentHealth = min (
+            self.maxHealth,
+            self.currentHealth + amount
+        )
+
+        return True
 
     def can_learn_ability (self, ability):
         
@@ -57,7 +97,11 @@ class Character:
     def get_details (self):
         return {
             "name": self.name,
+            "race": self.race.name if self.race else None, 
             "level": self.level,
+            "experience": self.experience,
+            "current_health": self.currentHealth,
+            "max_health": self.maxHealth,
             "job": self.job.name,
             "attributes": self.attributes,
             "learned_abilities": [
