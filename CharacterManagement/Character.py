@@ -109,3 +109,15 @@ class Character:
             ],
             "specialization_affinities": self.specializationAffinities
         }
+
+    def calculate_strength_attack_damage (self):
+        base_damage = 10
+        strength = self.attributes ["Strength"]
+
+        multiplier = 1 + (strength / 100)
+
+        return round (base_damage * multiplier)
+
+    def attack (self, target):
+        damage = self.calculate_strength_attack_damage()
+        target.take_damage (damage)
