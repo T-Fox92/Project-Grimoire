@@ -1,11 +1,24 @@
 class Ability:
-    def __init__ (self, name, description, abilityType, requiredLevel, progressionPath = None, prerequisites = None):
+    def __init__ (self, 
+                  name, 
+                  description, 
+                  abilityType, 
+                  requiredLevel, 
+                  progressionPath = None, 
+                  prerequisites = None,
+                  damageMultiplier = 1.0,
+                  healingPercentage = 0.0,
+                  scalingAttribute = None
+                  ):
         self.name = name
         self.description = description
         self.abilityType = abilityType
         self.requiredLevel = requiredLevel
         self.progressionPath = progressionPath
         self.prerequisites = prerequisites if prerequisites is not None else []
+        self.damageMultiplier = damageMultiplier
+        self.healingPercentage = healingPercentage
+        self.scalingAttribute = scalingAttribute
 
     def get_details (self):
         return {

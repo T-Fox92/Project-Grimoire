@@ -8,7 +8,8 @@ from CharacterManagement.JobDefinitions import FIGHTER
 from CharacterManagement.ProgressionManager import ProgressionManager
 
 
-def test_player_wins_combat_and_receives_experience():
+def test_player_wins_combat_and_receives_experience(monkeypatch):
+    monkeypatch.setattr ("builtins.input", lambda _: "1")
     character = Character("Test Hero", FIGHTER)
     progression_manager = ProgressionManager()
     combat_manager = CombatManager(progression_manager)
@@ -31,7 +32,8 @@ def test_player_wins_combat_and_receives_experience():
     assert character.experience == 15
 
 
-def test_player_loses_combat_and_receives_no_experience():
+def test_player_loses_combat_and_receives_no_experience(monkeypatch):
+    monkeypatch.setattr ("builtins.input", lambda _: "1")
     character = Character("Test Hero", FIGHTER)
     character.currentHealth = 1
 

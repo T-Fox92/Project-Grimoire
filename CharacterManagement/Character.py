@@ -93,6 +93,55 @@ class Character:
     def get_learned_abilities (self):
         return self.learnedAbilities
 
+    def use_ability (self, ability, target = None):
+
+        # Make sure the character knows the ability
+        if ability not in self.learnedAbilities:
+            return False
+
+        # Passive abilities cannot be manually activated
+        if ability.abilityType != "Active":
+            return False
+
+        # handle healing abilities
+        if ability.healingPercentage > 0:
+
+            healing = round (self.maxHealth * ability.healingPercentage)
+
+            previous_health = self.currentHealth
+
+            self.currentHealth = min (
+                self.maxHealth,
+                self.currentHealth + healing
+            )
+
+            # Return the actual amount of health restored
+            return self.currentHealth - previous_health
+
+        # Handle damage abilities
+        if ability.damageMultiplier > 0:
+
+            if target is None:
+                return False
+
+            attribute = ability.scalingAttribute
+
+            if attribute not in self.attributes:
+                return False
+
+            base_damage = 10
+            attribute_value = self.attributes [attribute]
+
+            multiplier = 1 + (attribute_value / 100)
+
+            damage = round (base_damage * multiplier * ability.damageMultiplier)
+
+            target.take_damage (damage)
+
+            return damage
+
+        return False
+
 
     def get_details (self):
         return {
