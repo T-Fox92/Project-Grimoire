@@ -3,6 +3,15 @@ import random
 
 class ProgressionManager:
 
+    MAX_LEVEL = 4
+
+    XP_THRESHOLDS = {
+        1: 0,
+        2: 100,
+        3: 250,
+        4: 450
+    }
+
     def get_available_abilites (self, character, ability_type):
         available_abilities = character.job.get_available_abilities().copy()
 
@@ -46,12 +55,59 @@ class ProgressionManager:
 
         return character.learn_ability (ability)
 
-    def level_up (self, character):
-        
-        # Our initial implementation only supports levels 1 through 3
-        if character.level >= 3:
+    def can_level_up (self, character):
+
+        # check the level limit
+        if character.level >= self.MAX_LEVEL:
             return False
 
-        character.level += 1
+        next_level = character.level + 1
+
+        # check whether the character has enough experience
+        required_experience = self.XP_THRESHOLDS [next_level]
+
+        return character.experience >= required_experience
+
+    def level_up (self, character, selected_attributes = None):
+
+        # check the level limit
+        if not self.can_level_up (character):
+            return False
+
+        next_level = character.level + 1
+
+        # Every fourth level is an attribute milestone
+        if next_level % 4 == 0:
+
+            # Require the player to select three attributes to boost
+            if selected_attributes is None or len (selected_attributes) != 3:
+                return False
+
+            if len (set (selected_attributes)) != 3:
+                return False
+
+            for attribute in selected_attributes:
+                if attribute not in character.attributes:
+                    return False
+
+        # Apply level increase
+        character.level = next_level
+
+        # Increase all attributes by 1
+        # Milestone attributes gain an additional 2 points
+        if next_level % 4 == 0:
+            character.increase_attributes (selected_attributes)
+
+        else:
+            character.increase_attributes ()
 
         return self.get_ability_choices (character)
+
+    def award_experience (self, character, amount):
+
+        if amount <= 0:
+            return False
+
+        character.experience += amount
+
+        return self.can_level_up (character)

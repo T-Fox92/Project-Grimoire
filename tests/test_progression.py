@@ -77,6 +77,7 @@ print("Starting level:", character.level)
 # Level 2
 print("\n--- Level 2 ---")
 
+character.experience = 100
 choices = progression.level_up(character)
 
 for index, ability in enumerate(choices, start=1):
@@ -93,6 +94,7 @@ for ability in character.get_learned_abilities():
 # Level 3
 print("\n--- Level 3 ---")
 
+character.experience = 250
 choices = progression.level_up(character)
 
 for index, ability in enumerate(choices, start=1):

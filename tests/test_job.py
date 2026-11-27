@@ -3,6 +3,13 @@ from CharacterManagement.Ability import Ability
 from CharacterManagement.Specialization import Specialization
 from CharacterManagement.Job import Job
 
+
+def test_job_core_attribute():
+    job = Job("Mage", "A practitioner of magic.", "Intelligence")
+
+    assert job.coreAttribute == "Intelligence"
+    assert job.get_core_attribute() == "Intelligence"
+
 # Create abilities
 charge = Ability(
     "Charge",
@@ -64,3 +71,4 @@ print("Agile specialization abilities:")
 for specialization in fighter.get_specializations():
     for ability in specialization.get_abilities():
         print(f"- {ability.name}")
+
