@@ -13,8 +13,10 @@ CHARGE = Ability(
     "Charge",
     "Rush toward an enemy and strike with a physical attack.",
     "Active",
-    1
-)
+    1,
+    damageMultiplier = 1.25,
+    scalingAttribute = "Strength"
+) 
 
 # Level 2 active choices
 MAGIC_WEAPON = Ability(
@@ -126,7 +128,8 @@ HEALING_LIGHT = Ability(
     "Healing Light",
     "Restore health to yourself or a selected ally.",
     "Active",
-    1
+    1,
+    healingPercentage = 0.33
 )
 
 # Level 2 active choices
@@ -239,7 +242,9 @@ TRI_DISASTER = Ability(
     "Tri-Disaster",
     "Deals Fire, Ice, and Lightning damage. Gains additional effects based on your elemental specialization.",
     "Active",
-    1
+    1,
+    damageMultiplier = 1.0,
+    scalingAttribute = "Intelligence"
 )
 
 # Level 2 active choices
