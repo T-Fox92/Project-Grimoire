@@ -5,6 +5,8 @@ from datetime import datetime
 from CharacterManagement.Character import Character
 from CharacterManagement.JobDefinitions import PLAYABLE_JOBS
 from CharacterManagement.RaceDefinitions import PLAYABLE_RACES
+from AdventureManagement.TutorialAdventure import create_tutorial_adventure
+
 
 class SaveGameManager:
 
@@ -184,11 +186,14 @@ class SaveGameManager:
 
             character = self.reconstruct_character (save_data ["character"])
 
+            adventure, current_scene = self.reconstruct_adventure (save_data ["adventure"])
+
             return {
                 "slot": save_data ["slot"],
                 "saved_at": save_data ["saved_at"],
                 "character": character,
-                "adventure": save_data ["adventure"]
+                "adventure": adventure,
+                "current_scene": current_scene
             }
 
         except (json.JSONDecodeError, KeyError, TypeError) as error:
@@ -212,3 +217,33 @@ class SaveGameManager:
         save_path.unlink ()
 
         return True
+
+    # ==========================================
+    # REBUILD ADVENTURE
+    # ==========================================
+
+
+    def reconstruct_adventure(self, adventure_data):
+
+        # Rebuild the adventure from its original definition
+        if adventure_data["title"] == "Tutorial":
+            adventure = create_tutorial_adventure()
+        else:
+            raise ValueError(
+                f"Unknown adventure: {adventure_data['title']}"
+            )
+
+        # Find the scene where the player last saved
+        current_scene = None
+
+        for scene in adventure.get_scenes():
+            if scene.name == adventure_data["current_scene"]:
+                current_scene = scene
+                break
+
+        if current_scene is None:
+            raise ValueError(
+                f"Unknown scene: {adventure_data['current_scene']}"
+            )
+
+        return adventure, current_scene

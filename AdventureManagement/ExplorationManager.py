@@ -41,9 +41,9 @@ class ExplorationManager:
 
         return True
 
-    def start_exploration (self, character, adventure):
+    def start_exploration (self, character, adventure, starting_scene = None):
 
-        current_scene = adventure.starting_scene
+        current_scene = starting_scene or adventure.starting_scene
         exploring = True
 
         while exploring:
@@ -56,28 +56,32 @@ class ExplorationManager:
 
             if not survived:
                 print ("\nYour adventure has ended.")
-                exploring = False
+                break
+
+            
+            if current_scene.connections:
+                print ("\nChoose a path, or enter 0 to leave the adventure.")
+
+                choice = input ("Selection: ")
+
+                if choice == "0":
+                    exploring = False
+
+                elif choice.isdigit():
+                    try:
+                        current_scene = self.move_to_scene (
+                            current_scene, int (choice)
+                        )
+
+                    except ValueError:
+                        print ("Invalid selection.")
+
+                else:
+                    print ("\nInvalid selection.")                
 
             else:
-                if current_scene.connections:
-                    print ("\nChoose a path, or enter 0 to leave the adventure.")
+                print ("\nThere are no paths forward.")
+                break
 
-                    choice = input ("Selection: ")
-
-                    if choice == "0":
-                        exploring = False
-
-                    elif choice.isdigit():
-                        try:
-                            current_scene = self.move_to_scene (
-                                current_scene, int (choice)
-                            )
-
-                        except ValueError:
-                            print ("Invalid selection.")
-
-                    else:
-                        print ("\nThere are no paths forward.")
-                        exploring = False
-
-                print ("\nYou have left the adventure.")
+        print ("\nYou have left the adventure.")
+        return current_scene

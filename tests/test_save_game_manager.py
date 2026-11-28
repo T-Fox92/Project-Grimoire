@@ -6,6 +6,7 @@ from CharacterManagement.JobDefinitions import FIGHTER
 from CharacterManagement.RaceDefinitions import HUMAN
 from AdventureManagement.Adventure import Adventure
 from AdventureManagement.Scene import Scene
+from AdventureManagement.TutorialAdventure import create_tutorial_adventure
 
 import pytest
 
@@ -25,15 +26,9 @@ def create_test_game():
         race=HUMAN
     )
 
-    adventure = Adventure(
-        "Test Adventure",
-        "An adventure used for testing."
-    )
+    adventure = create_tutorial_adventure ()
 
-    scene = Scene(
-        "Test Scene",
-        "A scene used for testing."
-    )
+    scene = adventure.starting_scene
 
     adventure.add_scene(scene)
     adventure.set_starting_scene(scene)
@@ -152,7 +147,14 @@ def test_save_game_refuses_overwrite_without_confirmation(save_manager):
 
 def test_save_game_allows_overwrite_with_confirmation(save_manager):
 
-    character, adventure, scene = create_test_game()
+    character = Character(
+        name="Test",
+        job=FIGHTER,
+        race=HUMAN
+    )
+
+    adventure = create_tutorial_adventure()
+    scene = adventure.starting_scene
 
     save_manager.save_game(1, character, adventure, scene)
 
@@ -174,7 +176,14 @@ def test_save_game_allows_overwrite_with_confirmation(save_manager):
 
 def test_load_game_restores_character(save_manager):
 
-    character, adventure, scene = create_test_game()
+    character = Character(
+        name="Test",
+        job=FIGHTER,
+        race=HUMAN
+    )
+
+    adventure = create_tutorial_adventure()
+    scene = adventure.starting_scene
 
     character.level = 2
     character.experience = 125
@@ -270,3 +279,57 @@ def test_invalid_save_slots_are_rejected(save_manager, slot):
 
     with pytest.raises(ValueError):
         save_manager.get_save_path(slot)
+
+
+def test_tutorial_adventure_can_be_reconstructed(save_manager):
+
+    adventure_data = {
+        "title": "Tutorial",
+        "current_scene": "Rat's Den"
+    }
+
+    adventure, current_scene = save_manager.reconstruct_adventure(
+        adventure_data
+    )
+
+    assert adventure.title == "Tutorial"
+    assert current_scene.name == "Rat's Den"
+
+
+def test_reconstructed_adventure_has_enemies(save_manager):
+
+    adventure_data = {
+        "title": "Tutorial",
+        "current_scene": "Rat's Den"
+    }
+
+    adventure, current_scene = save_manager.reconstruct_adventure(
+        adventure_data
+    )
+
+    assert len(current_scene.enemies) == 1
+    assert current_scene.enemies[0].name == "Feral Rat"
+
+
+def test_load_game_restores_adventure_and_scene(save_manager):
+
+    character = Character (name = "Test", job = FIGHTER, race = HUMAN)
+
+    tutorial = create_tutorial_adventure()
+    rat_den = next(
+        scene for scene in tutorial.get_scenes()
+        if scene.name == "Rat's Den"
+    )
+
+    save_manager.save_game(
+        1,
+        character,
+        tutorial,
+        rat_den
+    )
+
+    loaded_game = save_manager.load_game(1)
+
+    assert loaded_game["adventure"].title == "Tutorial"
+    assert loaded_game["current_scene"].name == "Rat's Den"
+    assert len(loaded_game["current_scene"].enemies) == 1
